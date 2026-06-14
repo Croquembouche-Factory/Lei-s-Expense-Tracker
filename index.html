@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Budget ✨</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">My Budget ✨</div>
+    <ul class="nav-links">
+      <li><a href="#overview" class="nav-link active">Overview</a></li>
+      <li><a href="#budget" class="nav-link">Budget</a></li>
+      <li><a href="#tracker" class="nav-link">Tracker</a></li>
+    </ul>
+    <button class="btn-icon" id="openCatManager" title="Manage Categories">⚙️ Categories</button>
+  </nav>
+
+  <main>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Overview</h2>
+        <div class="ov-month-tabs" id="ovMonthTabs"></div>
+      </div>
+
+      <div class="summary-row">
+        <div class="summary-card">
+          <span class="summary-label" id="ovSpentLabel">Total Spent</span>
+          <span class="summary-value" id="ovTotalSpent">₱0.00</span>
+        </div>
+        <div class="summary-card accent-yellow">
+          <span class="summary-label" id="ovBudgetLabel">Income</span>
+          <span class="summary-value" id="ovBudget">₱0.00</span>
+        </div>
+        <div class="summary-card" id="ovRemainingCard">
+          <span class="summary-label" id="ovRemainingLabel">Remaining</span>
+          <span class="summary-value" id="ovRemaining">₱0.00</span>
+        </div>
+        <div class="summary-card" id="ovSavedCard" style="display:none">
+          <span class="summary-label">Total Saved (Year)</span>
+          <span class="summary-value" id="ovSaved">₱0.00</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Transactions</span>
+          <span class="summary-value" id="ovCount">0</span>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Spending by Category</h3>
+          <div class="chart-wrap">
+            <canvas id="doughnutChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card chart-card--wide">
+          <h3 id="barChartTitle">Monthly Spending (<span id="chartYear"></span>)</h3>
+          <div class="chart-wrap">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="cat-cards" id="catCards"></div>
+    </section>
+
+    <!-- BUDGET -->
+    <section id="budget" class="section section--yellow">
+      <h2 class="section-title">Income & Budget</h2>
+
+      <!-- Income entry form -->
+      <div class="income-form-card">
+        <h3 class="income-form-title">Add Income</h3>
+        <div class="income-form-row">
+          <label class="field-label">Source / Label
+            <input type="text" id="incomeSource" class="field-input" placeholder="e.g. Salary, Side Hustle" />
+          </label>
+          <label class="field-label">Amount (₱)
+            <input type="number" id="incomeAmount" class="field-input" min="0" step="0.01" placeholder="0.00" />
+          </label>
+          <label class="field-label">Date
+            <input type="date" id="incomeDate" class="field-input" />
+          </label>
+          <button class="btn-primary income-add-btn" id="saveIncome">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Month selector for budget view -->
+      <div class="budget-month-nav">
+        <button class="btn-icon-sm" id="bdgPrevMonth">‹</button>
+        <span id="bdgMonthLabel" class="budget-month-label"></span>
+        <button class="btn-icon-sm" id="bdgNextMonth">›</button>
+      </div>
+
+      <!-- Summary display -->
+      <div class="budget-display">
+        <div class="budget-row">
+          <span>Total Income</span><span id="bdgBudget" class="budget-num">₱0.00</span>
+        </div>
+        <div class="budget-row">
+          <span>Total Spent</span><span id="bdgSpent" class="budget-num">₱0.00</span>
+        </div>
+        <div class="budget-row highlight-row">
+          <span id="bdgRemainingLabel">Saved / Remaining</span><span id="bdgRemaining" class="budget-num">₱0.00</span>
+        </div>
+        <div class="progress-bar-row">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="budgetBar"></div>
+          </div>
+          <span class="progress-pct" id="budgetBarPct"></span>
+        </div>
+        <p id="budgetStatus" class="budget-status"></p>
+      </div>
+
+      <!-- Income log for the selected month -->
+      <div class="income-log-section">
+        <h3>Income This Month</h3>
+        <ul id="incomeList" class="income-list"></ul>
+        <p id="incomeEmpty" class="empty-state" style="display:none">No income recorded for this month.</p>
+      </div>
+
+      <!-- All-time savings -->
+      <div class="savings-card">
+        <div class="savings-icon">🐷</div>
+        <div class="savings-info">
+          <span class="savings-label">Total Saved (All Time)</span>
+          <span class="savings-value" id="totalSavings">₱0.00</span>
+        </div>
+        <div class="savings-breakdown">
+          <span id="savingsIncome" class="savings-sub">Income: ₱0.00</span>
+          <span id="savingsSpent" class="savings-sub">Spent: ₱0.00</span>
+        </div>
+      </div>
+
+      <!-- Per-category caps -->
+      <div class="cat-budget-section">
+        <h3>Per-Category Caps <span class="hint">(optional)</span></h3>
+        <div id="catBudgetList" class="cat-budget-list"></div>
+      </div>
+    </section>
+
+    <!-- TRACKER -->
+    <section id="tracker" class="section">
+      <h2 class="section-title">Expense Tracker</h2>
+
+      <div class="tracker-toolbar">
+        <div class="toolbar-left">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search expenses…" />
+          <select id="filterCategory" class="filter-select">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="openAddExpense">+ Add Expense</button>
+      </div>
+
+      <div class="month-tabs" id="monthTabs"></div>
+
+      <div class="table-wrap">
+        <table class="expense-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expenseTableBody"></tbody>
+        </table>
+        <p id="emptyState" class="empty-state" style="display:none">No expenses found.</p>
+      </div>
+
+      <div class="tracker-totals">
+        <span>Showing <strong id="rowCount">0</strong> entries</span>
+        <span>Total: <strong id="filteredTotal">₱0.00</strong></span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ADD / EDIT EXPENSE MODAL -->
+  <div class="modal-overlay" id="expenseModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Expense</h3>
+        <button class="modal-close" id="closeExpenseModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="expenseId" />
+        <label class="field-label">Item Name
+          <input type="text" id="expenseName" class="field-input" placeholder="e.g. Milk tea" />
+        </label>
+        <label class="field-label">Date
+          <input type="date" id="expenseDate" class="field-input" />
+        </label>
+        <label class="field-label">Category
+          <div class="cat-select-row">
+            <select id="expenseCategory" class="field-input cat-select"></select>
+            <button class="btn-secondary btn-sm" id="openNewCat">+ New</button>
+          </div>
+        </label>
+        <label class="field-label">Amount (₱)
+          <input type="number" id="expenseAmount" class="field-input" min="0" step="0.01" placeholder="0.00" />
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelExpense">Cancel</button>
+        <button class="btn-primary" id="saveExpense">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY MANAGER MODAL -->
+  <div class="modal-overlay" id="catModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Manage Categories</h3>
+        <button class="modal-close" id="closeCatModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="new-cat-form">
+          <input type="hidden" id="editCatId" />
+          <input type="text" id="catNameInput" class="field-input" placeholder="Category name" />
+          <input type="color" id="catColorInput" class="color-picker" value="#B8DDED" />
+          <button class="btn-primary btn-sm" id="saveCat">Save</button>
+          <button class="btn-secondary btn-sm" id="cancelCatEdit" style="display:none">Cancel</button>
+        </div>
+        <ul class="cat-list" id="catList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
