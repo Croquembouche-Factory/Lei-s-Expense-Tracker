@@ -1,8 +1,8 @@
 /* ── Supabase client ── */
 const { createClient } = supabase;
 const sb = createClient(
-  'https://oeumgmuemgrlimexkwvj.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldW1nbXVlbWdybGltZXhrd3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NDA5NjcsImV4cCI6MjA5NzAxNjk2N30.qvJZKO-8lhrtSYjCRHSEKqDi6w-cFj1gqGA5XuC_PjQ'
+  'https://ykijxovmdkffpofzckmn.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraWp4b3ZtZGtmZnBvZnpja21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MDY1NTcsImV4cCI6MjA5NzI4MjU1N30._TJt0rwVXleuN2iJZ4pkvvblhjQNONp9s_2EIKzKoNA'
 );
 
 /* ── In-memory state ── */
