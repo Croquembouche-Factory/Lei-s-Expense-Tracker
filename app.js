@@ -28,6 +28,8 @@ let activeYear  = NOW.getFullYear();
 let bdgMonth    = NOW.getMonth();
 let bdgYear     = NOW.getFullYear();
 let ovMonth     = NOW.getMonth();
+let sortField   = 'date';  // 'date' | 'category' | 'amount'
+let sortDir     = 'asc';   // 'asc' | 'desc'
 
 /* ── Chart instances ── */
 let doughnutChart = null;
@@ -430,13 +432,50 @@ function setMonth(i) {
 function getFilteredExpenses() {
   const search = document.getElementById('searchInput').value.trim().toLowerCase();
   const catId  = document.getElementById('filterCategory').value;
-  return expenses.filter(e => {
+  const filtered = expenses.filter(e => {
     const d = new Date(e.date);
     return d.getFullYear() === activeYear
       && (activeMonth === -1 || d.getMonth() === activeMonth)
       && (!search || e.name.toLowerCase().includes(search))
       && (!catId  || e.categoryId === catId);
-  }).sort((a, b) => new Date(a.date) - new Date(b.date));
+  });
+
+  return filtered.sort((a, b) => {
+    let valA, valB;
+    if (sortField === 'date') {
+      valA = new Date(a.date); valB = new Date(b.date);
+    } else if (sortField === 'amount') {
+      valA = a.amount; valB = b.amount;
+    } else if (sortField === 'category') {
+      const catA = categories.find(c => c.id === a.categoryId)?.name || '';
+      const catB = categories.find(c => c.id === b.categoryId)?.name || '';
+      valA = catA.toLowerCase(); valB = catB.toLowerCase();
+    }
+    if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+    if (valA > valB) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+}
+
+function setSort(field) {
+  if (sortField === field) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortField = field;
+    sortDir   = field === 'amount' ? 'desc' : 'asc';
+  }
+  renderTracker();
+}
+
+function updateSortHeaders() {
+  const cols = { date: 'thDate', category: 'thCategory', amount: 'thAmount' };
+  Object.entries(cols).forEach(([field, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const arrow = sortField === field ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ' ⇅';
+    el.querySelector('.sort-label').textContent = arrow;
+    el.classList.toggle('th-active', sortField === field);
+  });
 }
 
 function renderTracker() {
@@ -475,6 +514,7 @@ function renderTracker() {
   const total = rows.reduce((s, e) => s + e.amount, 0);
   document.getElementById('rowCount').textContent      = rows.length;
   document.getElementById('filteredTotal').textContent = fmt(total);
+  updateSortHeaders();
 }
 
 function populateCategoryDropdowns() {

@@ -485,6 +485,15 @@ main { padding: 2rem; display: flex; flex-direction: column; gap: 2.5rem; }
   white-space: nowrap;
 }
 
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s, color .15s;
+}
+.th-sortable:hover { background: var(--blue); color: var(--text); }
+.th-active { background: var(--blue) !important; color: var(--text) !important; }
+.sort-label { font-size: .75rem; opacity: .7; }
+
 .expense-table td {
   padding: .65rem 1rem;
   border-bottom: 1px solid #eef4f8;

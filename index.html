@@ -166,10 +166,10 @@
         <table class="expense-table">
           <thead>
             <tr>
-              <th>Date</th>
+              <th id="thDate" class="th-sortable" onclick="setSort('date')">Date<span class="sort-label"> ▲</span></th>
               <th>Item</th>
-              <th>Category</th>
-              <th>Amount</th>
+              <th id="thCategory" class="th-sortable" onclick="setSort('category')">Category<span class="sort-label"> ⇅</span></th>
+              <th id="thAmount" class="th-sortable" onclick="setSort('amount')">Amount<span class="sort-label"> ⇅</span></th>
               <th>Actions</th>
             </tr>
           </thead>
