@@ -436,7 +436,7 @@ function getFilteredExpenses() {
       && (activeMonth === -1 || d.getMonth() === activeMonth)
       && (!search || e.name.toLowerCase().includes(search))
       && (!catId  || e.categoryId === catId);
-  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+  }).sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function renderTracker() {
